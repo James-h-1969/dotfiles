@@ -16,8 +16,13 @@ require("lazy").setup({ import = "plugins" })
 vim.api.nvim_create_autocmd("BufReadCmd", {
   pattern = "*.pdf",
   callback = function()
-    local filename = vim.fn.shellescape(vim.api.nvim_buf_get_name(0))
-    vim.fn.jobstart("open " .. filename, { detach = true })
+    local path = vim.api.nvim_buf_get_name(0)
+    local opener = "open"
+    if vim.fn.has("wsl") == 1 then
+      opener = "explorer.exe"
+      path = vim.trim(vim.fn.system({ "wslpath", "-w", path }))
+    end
+    vim.fn.jobstart({ opener, path }, { detach = true })
     vim.defer_fn(function() vim.cmd("bd!") end, 100)
   end
 })
@@ -25,7 +30,7 @@ vim.api.nvim_create_autocmd("BufReadCmd", {
 -- Show highlight on yank
 vim.api.nvim_create_autocmd("TextYankPost", {
     desc = "Highlight when yanking (copying) text",
-    group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = True }),
+    group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
     callback = function()
         vim.highlight.on_yank()
     end,

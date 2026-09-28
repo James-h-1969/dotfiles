@@ -2,11 +2,12 @@ vim.lsp.config("pyright", {
   cmd = { "pyright-langserver", "--stdio" },
   filetypes = { "python" },
   root_markers = { "pyproject.toml", "setup.py", "setup.cfg", "requirements.txt", ".git" },
-  settings = {
+  -- macOS: pin to the CommandLineTools python; elsewhere let pyright pick up the venv/PATH python
+  settings = vim.fn.has("mac") == 1 and {
     python = {
       pythonPath = "/Library/Developer/CommandLineTools/usr/bin/python3",
     },
-  },
+  } or nil,
 })
 vim.lsp.enable("pyright")
 
@@ -21,9 +22,9 @@ vim.lsp.config("tinymist", {
   cmd = { "tinymist" },
   filetypes = { "typst" },
   root_markers = { "typst.toml", ".git" },
-  init_options = {
+  init_options = vim.fn.isdirectory("/Users/james.hocking/thesis") == 1 and {
     typstExtraArgs = { "--root", "/Users/james.hocking/thesis" },
-  },
+  } or nil,
 })
 vim.lsp.enable("tinymist")
 
